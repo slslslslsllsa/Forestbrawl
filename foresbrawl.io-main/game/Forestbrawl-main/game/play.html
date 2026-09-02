@@ -14139,6 +14139,16 @@ window._perf = {
 };
 window._perfOCCount = 0; // reset each frame
 
+function initMultiplayerOfflineFallback() {
+  _connected = true;
+  const badge = document.getElementById('ping-display');
+  if (badge) {
+    badge.textContent = '🏠 Çevrimdışı';
+    badge.style.color = '#aaddff';
+    badge.style.display = '';
+  }
+}
+
 function initMultiplayer() {
   if (_GAME_MODE === 'offline') {
     // Çevrimdışı mod — sunucu bağlantısı yok
@@ -16468,6 +16478,8 @@ if (_GAME_MODE === 'online') {
   _sioScript.async = true;
   _sioScript.onload = () => initMultiplayer();
   _sioScript.onerror = () => {
+    // Keep the game playable when a VDS/proxy blocks the socket asset.
+    initMultiplayerOfflineFallback();
     const badge = document.getElementById('ping-display');
     if (badge) { badge.textContent = '🌐 Sunucuya bağlanılamadı'; badge.style.color = '#ff8888'; badge.style.display = ''; }
   };

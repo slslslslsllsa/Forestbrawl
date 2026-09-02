@@ -8,6 +8,32 @@ const PORT = Number(process.env.PORT || 3000);
 const root = path.join(__dirname, 'game');
 const players = new Map();
 const buildings = new Map();
+const BUILDING_CELL_SIZE = 180;
+let buildingGrid = new Map();
+function rebuildBuildingGrid() {
+  const nextGrid = new Map();
+  for (const building of buildings.values()) {
+    const key = `${Math.floor((Number(building.x) || 0) / BUILDING_CELL_SIZE)},${Math.floor((Number(building.y) || 0) / BUILDING_CELL_SIZE)}`;
+    const bucket = nextGrid.get(key);
+    if (bucket) bucket.push(building);
+    else nextGrid.set(key, [building]);
+  }
+  buildingGrid = nextGrid;
+}
+function nearbyBuildings(x, y, radius) {
+  const minX = Math.floor((x - radius) / BUILDING_CELL_SIZE);
+  const maxX = Math.floor((x + radius) / BUILDING_CELL_SIZE);
+  const minY = Math.floor((y - radius) / BUILDING_CELL_SIZE);
+  const maxY = Math.floor((y + radius) / BUILDING_CELL_SIZE);
+  const nearby = [];
+  for (let cellX = minX; cellX <= maxX; cellX++) {
+    for (let cellY = minY; cellY <= maxY; cellY++) {
+      const bucket = buildingGrid.get(`${cellX},${cellY}`);
+      if (bucket) nearby.push(...bucket);
+    }
+  }
+  return nearby;
+}
 const parties = new Map();
 const clans = new Map();
 const sessions = new Map();
@@ -28,6 +54,7 @@ let nextAirdropId = 1;
 const BOUNTY_EVENT_ENABLED = false;
 let currentBountyId = null;
 let lastAirdropSpawn = 0;
+setInterval(rebuildBuildingGrid, 250);
 
 const QUESTS_LIST = [
   { id: 'q_wolf_5', title: 'Kurt Avcısı', desc: '5 vahşi kurt öldür', icon: '🐺', key: 'wolves', target: 5, rewardCoins: 250, rewardXp: 200 },
@@ -1064,7 +1091,7 @@ setInterval(() => {
     }
 
     // Solid collision push-out against buildings
-    for (const b of buildings.values()) {
+    for (const b of nearbyBuildings(mob.x, mob.y, mob.radius + 120)) {
       if (b.type === 5) continue; // Boost pad allows walkover
       if (b.type === 6 && (b.hp ?? 100) > 0) {
         // Trap capture check
@@ -1278,22 +1305,7 @@ io.on('connection', (socket) => {
 
   socket.on('state', (data = {}) => {
     let player = players.get(socket.id);
-    if (!player) {
-      player = {
-        id: socket.id,
-        name: data.name || 'Oyuncu',
-        hp: data.hp ?? 250,
-        maxHp: data.maxHp ?? 250,
-        score: Number(data.score ?? data.sc ?? 0) || 0,
-        sc: Number(data.score ?? data.sc ?? 0) || 0,
-        gold: Number(data.gold ?? 0) || 0,
-        kills: Number(data.kills ?? 0) || 0,
-        x: 0,
-        y: 0,
-        stateAt: Date.now()
-      };
-      players.set(socket.id, player);
-    }
+    if (!player) return;
     const prevX = Number(player.x) || 0;
     const prevY = Number(player.y) || 0;
     const incomingX = Number(data.x);
@@ -1359,9 +1371,10 @@ io.on('connection', (socket) => {
     const tier = Math.max(0, Math.min(5, Number(weapon === 2 ? data.swordTier : data.axeTier) || 0));
     const multiplier = [1, 1.5, 2.2, 3.5, 5, 8][tier];
     const damage = Math.min(120, Math.round((weapon === 2 ? 30 : 22) * multiplier));
-    const angle = Number(data.angle) || 0;
-    const attackerX = Number(data.x) || 0, attackerY = Number(data.y) || 0;
-    attacker.x = attackerX; attacker.y = attackerY; attacker.angle = angle;
+    const angle = Number(data.angle);
+    if (!Number.isFinite(angle)) return;
+    const attackerX = Number(attacker.x) || 0, attackerY = Number(attacker.y) || 0;
+    attacker.angle = angle;
     for (const [targetId, target] of players) {
       if (targetId === socket.id || target.hp <= 0) continue;
       if ((attacker.clanId && attacker.clanId === target.clanId) || (attacker.team && target.team && attacker.team === target.team)) continue;
@@ -1404,7 +1417,10 @@ io.on('connection', (socket) => {
     const target = players.get(data.targetId);
     if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) return;
     if ((attacker.clanId && attacker.clanId === target.clanId) || (attacker.team && target.team && attacker.team === target.team)) return;
-    const damage = Math.max(1, Math.min(140, Number(data.dmg) || 30));
+    const distance = Math.hypot((Number(target.x) || 0) - (Number(attacker.x) || 0), (Number(target.y) || 0) - (Number(attacker.y) || 0));
+    if (distance > 950) return;
+    const tier = Math.max(0, Math.min(5, Number(data.tier) || Number(attacker.axeTier) || 0));
+    const damage = Math.min(140, Math.max(1, Math.round((14 + tier * 6) * (Number(attacker.damageMultiplier) || 1))));
     target.hp = Math.max(0, (target.hp ?? 250) - damage);
     io.to(data.targetId).emit('pvp_hit', { dmg: damage, fromName: attacker.name || 'Oyuncu' });
     io.to(data.targetId).emit('self_state', { hp: target.hp });

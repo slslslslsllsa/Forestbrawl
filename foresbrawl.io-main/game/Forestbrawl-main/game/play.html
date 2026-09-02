@@ -12115,6 +12115,7 @@ function resolveEntitySolidCollision(e, isBoss) {
 let _gameLoopRaf = null;
 function update(timestamp = 0) {
   _gameLoopRaf = requestAnimationFrame(update);
+  if (document.hidden) return;
   // Let rAF match the display (60/120/144). Skipping frames under 14ms caused stutter/flicker.
   const _elapsed = _lastFrameTs ? timestamp - _lastFrameTs : 16.67;
   if (_elapsed > 0 && _elapsed < 1) return;

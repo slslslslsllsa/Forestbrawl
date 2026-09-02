@@ -14163,6 +14163,16 @@ function initMultiplayer() {
   }
   if (typeof io === 'undefined') { console.warn('Socket.io not loaded'); return; }
   _socket = io({ path: '/api/socket.io', transports: ['websocket', 'polling'], upgrade: true });
+  const _connectionFallbackTimer = setTimeout(() => {
+    if (!_socket.connected && !_connected) {
+      initMultiplayerOfflineFallback();
+      if (_pingEl) {
+        _pingEl.textContent = '🏠 Çevrimdışı';
+        _pingEl.style.color = '#aaddff';
+        _pingEl.style.display = '';
+      }
+    }
+  }, 5000);
   _setupInGameClan();
 
   // ── Stable guest ID for reconnect grace ──────────────────────────────────
@@ -14191,6 +14201,7 @@ function initMultiplayer() {
   // unless the second handler ran first.
   let _pingTimer = null;
   _socket.on('connect', () => {
+    clearTimeout(_connectionFallbackTimer);
     _mySocketId = _socket.id;
     _connected = true;
     // Reset reconnect state (matters on reconnect; safe to call on initial connect too)

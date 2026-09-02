@@ -2109,6 +2109,7 @@ function resize() {
   let w = Math.round(window.innerWidth  || (vv ? vv.width  : 0) || screen.width  || 800);
   let h = Math.round(window.innerHeight || (vv ? vv.height : 0) || screen.height || 600);
   if (!w || !h || w < 50 || h < 50) return;
+  _isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && w < 900;
   // Ignore 1–7px address-bar jitter: assigning canvas.width wipes the bitmap (full-screen flash).
   if (canvas.width > 0 && Math.abs(_lastCanvasW - w) < 8 && Math.abs(_lastCanvasH - h) < 8) return;
 
@@ -2191,7 +2192,7 @@ const _BASE = window.location.pathname.replace(/\/play\.html$/, '/') || '/';
 // mod: 'online' = çok oyunculu (varsayılan), 'offline' = tek oyunculu
 const _GAME_MODE = urlParams.get('mode') === 'offline' ? 'offline' : 'online';
 
-const _isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 900;
+let _isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 900;
 const _lowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4) || /Android\s+[1-7]|iPhone|iPad/i.test(navigator.userAgent);
 let ZOOM = _isMobile ? 0.58 : 0.68;
 let camX = 0, camY = 0, _camReady = false;
@@ -13217,8 +13218,8 @@ function update(timestamp = 0) {
   }
 
   // ── PC & Mobil Kamera Yakınlığı (mobilde oyuncudan daha uzakta, daha rahat çerçeve) ──
-  const _baseTarget = _onTrain ? (_isMobile ? 0.62 : 0.66) : (_isMobile ? 0.60 : 0.53);
-  const _zoomTarget = Math.max(0.52, Math.min(0.82, _baseTarget * _userZoomMultiplier));
+  const _baseTarget = _onTrain ? (_isMobile ? 0.58 : 0.66) : (_isMobile ? 0.48 : 0.53);
+  const _zoomTarget = Math.max(0.42, Math.min(0.82, _baseTarget * _userZoomMultiplier));
   ZOOM += (_zoomTarget - ZOOM) * 0.065;
 
   // ── Kamera Sınır Kelepçesi: Ekran dışı / boşluk asla görünmez ──

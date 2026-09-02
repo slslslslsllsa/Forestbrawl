@@ -15456,9 +15456,6 @@ function _mpUpdate() {
       else _socket.volatile.emit('state', _statePayload);
     }
   }
-  // Ping every ~1.5s for responsive ms display
-  _pingTimer++;
-  if (_pingTimer >= 90) { _pingTimer = 0; _socket.emit('ping_req', { t: Date.now() }); }
 }
 
 // Background tab keepalive — prevents server from disconnecting or deleting buildings when user switches tabs!

@@ -790,6 +790,25 @@ function _makeMulberry32(seed) {
 }
 
 const serverObstacles = [];
+const obstacleGrid = new Map();
+const OBSTACLE_CELL_SIZE = 180;
+function obstacleCellKey(x, y) {
+  return `${Math.floor(x / OBSTACLE_CELL_SIZE)},${Math.floor(y / OBSTACLE_CELL_SIZE)}`;
+}
+function nearbyServerObstacles(x, y, radius) {
+  const minCellX = Math.floor((x - radius) / OBSTACLE_CELL_SIZE);
+  const maxCellX = Math.floor((x + radius) / OBSTACLE_CELL_SIZE);
+  const minCellY = Math.floor((y - radius) / OBSTACLE_CELL_SIZE);
+  const maxCellY = Math.floor((y + radius) / OBSTACLE_CELL_SIZE);
+  const nearby = [];
+  for (let cellX = minCellX; cellX <= maxCellX; cellX++) {
+    for (let cellY = minCellY; cellY <= maxCellY; cellY++) {
+      const bucket = obstacleGrid.get(`${cellX},${cellY}`);
+      if (bucket) nearby.push(...bucket);
+    }
+  }
+  return nearby;
+}
 (function initServerObstacles() {
   const rng = _makeMulberry32(0x4F524553);
   const r = 7200 * 0.90 * 0.98;
@@ -798,7 +817,12 @@ const serverObstacles = [];
     const y = (rng() * 2 - 1) * r;
     const typeRoll = rng();
     const radius = (typeRoll < 0.45 ? 42 : typeRoll < 0.75 ? 38 : 32) * 0.72;
-    serverObstacles.push({ x, y, radius });
+    const obstacle = { x, y, radius };
+    serverObstacles.push(obstacle);
+    const key = obstacleCellKey(x, y);
+    const bucket = obstacleGrid.get(key);
+    if (bucket) bucket.push(obstacle);
+    else obstacleGrid.set(key, [obstacle]);
   }
 })();
 
@@ -1020,8 +1044,9 @@ setInterval(() => {
     mob.y += mob.vy;
 
     // Solid collision push-out against resources (trees, rocks, gold)
-    for (let oi = 0; oi < serverObstacles.length; oi++) {
-      const obs = serverObstacles[oi];
+    const nearbyObstacles = nearbyServerObstacles(mob.x, mob.y, mob.radius + 60);
+    for (let oi = 0; oi < nearbyObstacles.length; oi++) {
+      const obs = nearbyObstacles[oi];
       const ox = mob.x - obs.x, oy = mob.y - obs.y;
       const oDist2 = ox * ox + oy * oy;
       const minODist = mob.radius + obs.radius;

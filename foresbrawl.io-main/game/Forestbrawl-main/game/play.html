@@ -2081,6 +2081,15 @@ function drawSkinEyesOverlay(c, R, sk, fl) {
 const canvas = document.getElementById('gameCanvas');
 // alpha:false avoids a transparent clear (cheaper). desynchronized:true causes tearing/flicker on Windows Chrome.
 let ctx = canvas.getContext('2d', { alpha: false });
+function createRenderCanvas(width, height) {
+  if (typeof OffscreenCanvas === 'function') {
+    try { return new OffscreenCanvas(width, height); } catch (e) {}
+  }
+  const fallback = document.createElement('canvas');
+  fallback.width = width;
+  fallback.height = height;
+  return fallback;
+}
 window._perf = window._perf || {
   frameMs:0, renderMs:0, tCamps:0, tTelegraph:0, tGround:0, tBuildings:0, tPlayers:0, tEnemies:0, tParticles:0,
   ocRebuild:0, eMobs:0, ePlayers:0, eParticles:0, eProjectiles:0, eTelegraphs:0, eBuildings:0, quality:0, shadowBlurActive:0
@@ -3971,8 +3980,7 @@ const _NT_OBJ_POOL = Array.from({length: 32}, () => ({wx:0,wy:0,name:'',rankId:0
 let _ntPoolIdx = 0;
 // Shared measure context — avoids document.createElement per cache build
 const _NT_MEAS_CTX = (function(){
-  try { if (typeof OffscreenCanvas === 'function') return new OffscreenCanvas(1, 1).getContext('2d'); } catch (e) {}
-  const c = document.createElement('canvas'); c.width = 1; c.height = 1; return c.getContext('2d');
+  return createRenderCanvas(1, 1).getContext('2d');
 })();
 // Cache TTL in frames per rank tier: 0=never (static), 30=slow pulse, 16=rotation animation
 const _NT_TTL = [0,0,0,30,30,30,30,30,30,30,16,16];
@@ -4878,7 +4886,7 @@ function _drawNameTagCached(ctx, sx, sy, name, rankId, hpRatio, isOwn, t) {
     const anchorX = pad + totalW / 2;
     const anchorY = pad + BR + 2;
     const ocH = Math.ceil(anchorY + BR * 1.5 + pad);
-    const oc = new OffscreenCanvas(ocW, ocH);
+    const oc = createRenderCanvas(ocW, ocH);
     const occ = oc.getContext('2d');
     drawNameTag12(occ, anchorX, anchorY, name, rankId, hpRatio, isOwn, t);
     entry = { oc, anchorX, anchorY };
@@ -7603,7 +7611,7 @@ function drawStreakOverlay() {
   if (_milestoneOC_label !== _milestoneLabel || _milestoneOC_sz !== fs) {
     _milestoneOC_label = _milestoneLabel; _milestoneOC_sz = fs;
     const _mpad = Math.ceil(fs * 1.8);
-    _milestoneOC = new OffscreenCanvas(Math.ceil(canvas.width) + _mpad * 2, Math.ceil(fs * 2) + _mpad * 2);
+    _milestoneOC = createRenderCanvas(Math.ceil(canvas.width) + _mpad * 2, Math.ceil(fs * 2) + _mpad * 2);
     const _moc = _milestoneOC.getContext('2d');
     _moc.font = `900 ${fs}px Arial`; _moc.textAlign = 'center'; _moc.textBaseline = 'middle';
     _moc.shadowColor = _milestoneColor; _moc.shadowBlur = 32;
@@ -7627,7 +7635,7 @@ function drawNightOverlay(){
   // PERF: draw sun to a 78×78 OffscreenCanvas once, blit every frame.
   // Eliminates shadowBlur=22 setup cost on the main canvas each frame.
   if(!_sunOC){
-    _sunOC=new OffscreenCanvas(78,78);
+    _sunOC=createRenderCanvas(78,78);
     const _sc=_sunOC.getContext('2d');
     _sc.fillStyle='#ffe066';
     if(_qualityLevel>=2){ _sc.shadowColor='#ffcc00'; _sc.shadowBlur=22; }
@@ -8816,7 +8824,7 @@ function _getWmOC(tier, _mp, tpL, tpD, tpA, tpB) {
   const blades = [4,4,6,6,6,8][tier]||4;
 
   // Base disc (100×100, center at 50,50) — completely different shape per tier
-  const baseOC = new OffscreenCanvas(100, 100);
+  const baseOC = createRenderCanvas(100, 100);
   const bc = baseOC.getContext('2d');
   bc.translate(50, 50);
   switch(tier){
@@ -8899,7 +8907,7 @@ function _getWmOC(tier, _mp, tpL, tpD, tpA, tpB) {
 
   // Single blade (70×40, arm y-center at y=20) — different shape per tier
   const sailH=[40,40,44,44,44,44][tier];
-  const sailOC = new OffscreenCanvas(70, sailH);
+  const sailOC = createRenderCanvas(70, sailH);
   const sc = sailOC.getContext('2d');
   sc.translate(0, sailH/2);
   switch(tier){
@@ -8975,7 +8983,7 @@ function _getWmOC(tier, _mp, tpL, tpD, tpA, tpB) {
   }
 
   // Hub center (30×30)
-  const hubOC = new OffscreenCanvas(30, 30);
+  const hubOC = createRenderCanvas(30, 30);
   const hc = hubOC.getContext('2d');
   hc.translate(15, 15);
   switch(tier){
@@ -9009,7 +9017,7 @@ const _B_TIER_PALETTES = [
 ];
 function _getBldSC(key, w, h, cx, cy, drawFn) {
   if (_bldSC.has(key)) return _bldSC.get(key);
-  const oc = new OffscreenCanvas(w, h);
+  const oc = createRenderCanvas(w, h);
   const c  = oc.getContext('2d');
   c.translate(cx, cy);
   drawFn(c);
@@ -10654,7 +10662,7 @@ function drawPlayerWings(ctx, wingId, t) {
   let _wEnt = _WING_OC_CACHE.get(wingId);
   if (!_wEnt || t - _wEnt.age >= 3) {
     const _osz = 130;
-    if (!_wEnt) { _wEnt = { oc: new OffscreenCanvas(_osz, _osz), age: -99 }; _WING_OC_CACHE.set(wingId, _wEnt); }
+    if (!_wEnt) { _wEnt = { oc: createRenderCanvas(_osz, _osz), age: -99 }; _WING_OC_CACHE.set(wingId, _wEnt); }
     const _wc = _wEnt.oc.getContext('2d');
     _wc.imageSmoothingEnabled = true; _wc.imageSmoothingQuality = 'high';
     _wc.clearRect(0, 0, _osz, _osz);
@@ -11663,7 +11671,7 @@ function drawPlayer() {
       let _lbEnt = _BODY_OC_CACHE.get(_lbsk);
       const _lbR = player.radius, _lbcw = (_lbR * 3.6) | 0;
       if (!_lbEnt || _lbEnt.oc.width !== _lbcw || globalTime - _lbEnt.age >= 6) {
-        if (!_lbEnt || _lbEnt.oc.width !== _lbcw) { _lbEnt = { oc: new OffscreenCanvas(_lbcw, _lbcw), age: -99 }; _BODY_OC_CACHE.set(_lbsk, _lbEnt); }
+        if (!_lbEnt || _lbEnt.oc.width !== _lbcw) { _lbEnt = { oc: createRenderCanvas(_lbcw, _lbcw), age: -99 }; _BODY_OC_CACHE.set(_lbsk, _lbEnt); }
         const _lbc = _lbEnt.oc.getContext('2d');
         _lbc.imageSmoothingEnabled = true; _lbc.imageSmoothingQuality = 'high';
         _lbc.clearRect(0, 0, _lbcw, _lbcw);
@@ -13833,7 +13841,7 @@ function update(timestamp = 0) {
   // Player level badge (screen-space) — PERF: OC-cached, only redrawn when level changes
   if (_playerLevel !== _lvlBadgeLevel || !_lvlBadgeOC) {
     _lvlBadgeLevel = _playerLevel;
-    _lvlBadgeOC = new OffscreenCanvas(80, 28);
+    _lvlBadgeOC = createRenderCanvas(80, 28);
     const _lbc = _lvlBadgeOC.getContext('2d');
     _lbc.fillStyle = 'rgba(0,0,0,0.6)'; _lbc.strokeStyle = '#ffdd00'; _lbc.lineWidth = 2;
     _lbc.beginPath(); _lbc.roundRect(0, 0, 80, 28, 8); _lbc.fill(); _lbc.stroke();
@@ -13977,7 +13985,7 @@ function _drawDashCooldown() {
   if (_cdState !== _dashCdState || canvas.width !== _dashCdW || canvas.height !== _dashCdH) {
     _dashCdState = _cdState; _dashCdW = canvas.width; _dashCdH = canvas.height;
     const _bw = 80, _bh = 64;
-    _dashCdOC = new OffscreenCanvas(_bw, _bh);
+    _dashCdOC = createRenderCanvas(_bw, _bh);
     const dc = _dashCdOC.getContext('2d');
     const x = _bw - 20, y = _bh - 32, r = 20;
     dc.globalAlpha = 0.85;
@@ -15634,7 +15642,7 @@ function drawOtherPlayers() {
           const _obTTL = _qualityLevel >= 2 ? 6 : _qualityLevel === 1 ? 10 : 16;
           if (!_obEnt || globalTime - _obEnt.age >= _obTTL) {
             const _obcw = 126; // 35 * 3.6 = 126
-            if (!_obEnt) { _obEnt = { oc: new OffscreenCanvas(_obcw, _obcw), age: -99 }; _BODY_OC_CACHE.set(_obsk, _obEnt); }
+            if (!_obEnt) { _obEnt = { oc: createRenderCanvas(_obcw, _obcw), age: -99 }; _BODY_OC_CACHE.set(_obsk, _obEnt); }
             const _obcc = _obEnt.oc.getContext('2d');
             _obcc.imageSmoothingEnabled = true; _obcc.imageSmoothingQuality = 'high';
             _obcc.clearRect(0, 0, _obcw, _obcw);
@@ -15651,7 +15659,7 @@ function drawOtherPlayers() {
         const _eyeSk = p.skin || 'default';
         let _eyeOC = _EYE_OC_CACHE.get(_eyeSk);
         if (!_eyeOC) {
-          _eyeOC = new OffscreenCanvas(126, 126);
+          _eyeOC = createRenderCanvas(126, 126);
           const _ec = _eyeOC.getContext('2d');
           _ec.imageSmoothingEnabled = true; _ec.imageSmoothingQuality = 'high';
           _ec.save(); _ec.translate(63, 63);
@@ -16166,7 +16174,7 @@ function drawTrainRails() {
 let _locoBodyOC=null;
 function _buildLocoBodyOC(){
   const S=2.4,W=450,H=260,CX=225,CY=130;
-  _locoBodyOC=new OffscreenCanvas(W,H);
+  _locoBodyOC=createRenderCanvas(W,H);
   const c=_locoBodyOC.getContext('2d');
   c.translate(CX,CY); c.scale(S,S);
   c.shadowColor='rgba(0,0,0,0.7)'; c.shadowBlur=28; c.shadowOffsetY=14;
@@ -16183,7 +16191,7 @@ let _carBodyOCs=[null,null,null];
 const _carBodyColors=[['#4466bb','#223388','#112266'],['#226633','#144422','#0a2a12'],['#884400','#552200','#2a1000']];
 function _buildCarBodyOC(vi){
   const S=2.4,W=340,H=200,CX=170,CY=100;
-  const oc=new OffscreenCanvas(W,H);
+  const oc=createRenderCanvas(W,H);
   const c=oc.getContext('2d');
   c.translate(CX,CY); c.scale(S,S);
   const [bc0,bc1,bc2]=_carBodyColors[vi];
@@ -17286,7 +17294,7 @@ window._drawCavesHook=function(ctx){
   // Build shared glow bitmap once — zero cost on subsequent frames
   if(!_caveGrdCache){
     try{
-      var _cgOC=new OffscreenCanvas(180,180);
+      var _cgOC=createRenderCanvas(180,180);
       var _cgCx=_cgOC.getContext('2d');
       var _cg=_cgCx.createRadialGradient(90,90,0,90,90,90);
       _cg.addColorStop(0,'rgba(80,0,180,0.45)');

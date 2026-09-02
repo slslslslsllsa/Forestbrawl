@@ -495,7 +495,7 @@
                     <i class="fa-solid fa-question text-white text-lg"></i>
                 </button>
                 <button onclick="openModal('newsModal'); playSfx('click')" class="btn-3d btn-yellow px-3 py-1 font-io text-xs flex items-center gap-1.5 stroke-text-dark">
-                    DAILY NEWS <i class="fa-regular fa-newspaper text-base"></i>
+                    GÜNDEM <i class="fa-regular fa-newspaper text-base"></i>
                 </button>
             </div>
 
@@ -759,7 +759,7 @@
                     <h3 class="font-io text-white stroke-text text-[13px] mb-1 text-center">Oynanış & Mobil</h3>
                     <div class="flex justify-between items-center bg-black/20 p-2 rounded-lg border border-white/10">
                         <div class="flex flex-col leading-tight w-2/3">
-                            <span class="text-white font-black text-xs">1-Click Food (Otomatik Yemek)</span>
+                            <span class="text-white font-black text-xs">Kolay Yemek</span>
                             <span class="text-[#F4E4C6] font-black text-[9px]">Tek tıkla veya can azalınca hızlı beslen</span>
                         </div>
                         <input id="set-auto-eat" type="checkbox" checked class="toggle-switch" onchange="saveSetting('fb_auto_eat', this.checked)">
@@ -768,7 +768,7 @@
                     <div class="flex justify-between items-center bg-black/20 p-2 rounded-lg border border-white/10">
                         <div class="flex flex-col leading-tight w-2/3">
                             <span class="text-white font-black text-xs">1-Click Wall (Hızlı Duvar)</span>
-                            <span class="text-[#F4E4C6] font-black text-[9px]">Izgaraya otomatik hizalı yapı yerleştir</span>
+                            <span class="text-[#F4E4C6] font-black text-[9px]">Izgaraya hizalı yapı yerleştir</span>
                         </div>
                         <input id="set-build-snap" type="checkbox" checked class="toggle-switch" onchange="saveSetting('fb_build_snap', this.checked)">
                     </div>
@@ -1106,7 +1106,7 @@
 
         <!-- 13. GÜNLÜK HABERLER -->
         <div id="newsModal" class="panel-wood w-full max-w-[440px] p-2.5 pt-6 hidden flex-col relative modal-content" onclick="event.stopPropagation()">
-            <div class="modal-tab">DAILY NEWS</div>
+            <div class="modal-tab">GÜNDEM</div>
             <button onclick="closeAllModals()" class="btn-3d bg-[#F4E4C6] border-[3px] border-[var(--border-heavy)] absolute top-2 right-3 w-9 h-9 rounded-lg font-io text-xl flex items-center justify-center pb-1 text-[var(--border-heavy)] z-50">✕</button>
             
             <div class="panel-inset p-4 mt-4 border-[3px] flex flex-col gap-3 text-white">
@@ -1990,7 +1990,7 @@
             { id: 'q_scorpion_3', title: 'Çöl Akrebi Avcısı', desc: '3 akrep yok et', icon: '🦂', key: 'scorpions', target: 3, rewardCoins: 350, rewardXp: 250, color: 'yellow' },
             { id: 'q_spider_3', title: 'Mağara Örümceği', desc: '3 zehirli örümcek öldür', icon: '🕷️', key: 'spiders', target: 3, rewardCoins: 300, rewardXp: 220, color: 'purple' },
             { id: 'q_pvp_kill_1', title: 'İlk Kan', desc: '1 düşman oyuncu katlet', icon: '⚔️', key: 'kills', target: 1, rewardCoins: 400, rewardXp: 300, color: 'red' },
-            { id: 'q_bounty_king_1', title: 'Kral Katili', desc: '1 Altın Kralı devir', icon: '👑', key: 'kingKills', target: 1, rewardCoins: 650, rewardXp: 500, color: 'yellow' },
+            { id: 'q_bounty_king_1', title: 'Ödül Avcısı', desc: '1 ödül hedefini yen', icon: '🎯', key: 'kingKills', target: 1, rewardCoins: 650, rewardXp: 500, color: 'yellow' },
             { id: 'q_airdrop_1', title: 'Hazine Avcısı', desc: '1 Airdrop Sandığı aç', icon: '📦', key: 'airdrops', target: 1, rewardCoins: 350, rewardXp: 300, color: 'cyan' },
             { id: 'q_build_15', title: 'Usta Mimar', desc: '15 savunma yapısı inşa et', icon: '🪵', key: 'buildings', target: 15, rewardCoins: 200, rewardXp: 150, color: 'emerald' },
             { id: 'q_gold_1000', title: 'Zengin Savaşçı', desc: 'Toplam 1000 Altına ulaş', icon: '💎', key: 'gold', target: 1000, rewardCoins: 500, rewardXp: 400, color: 'blue' }

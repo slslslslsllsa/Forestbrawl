@@ -503,7 +503,7 @@
             <div onclick="openModal('challengesModal'); playSfx('click')" class="panel-wood p-1.5 flex flex-col w-36 cursor-pointer hover:scale-105 transition-transform" style="border-width: 3px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
                 <span class="text-white font-black text-[10px] mb-0.5 px-1 drop-shadow-md">Forest Arena</span>
                 <div class="bg-gradient-to-r from-emerald-600 to-green-700 rounded-lg h-14 border-2 border-[var(--border-heavy)] relative overflow-hidden flex items-center justify-center shadow-inner">
-                    <span class="font-io text-white text-base stroke-text">SEASON 1</span>
+                    <span class="font-io text-white text-base stroke-text">SEZON 1</span>
                     <i class="fa-solid fa-trophy absolute bottom-1 right-1 text-yellow-300 text-lg drop-shadow-md"></i>
                 </div>
             </div>
@@ -520,7 +520,7 @@
                     KLAN SİSTEMİ
                 </button>
                 <button onclick="openModal('leadersModal'); playSfx('click')" class="btn-3d btn-action col-span-2 py-1.5 text-amber-300 font-io text-[11px] tracking-wide font-bold">
-                    LEADERBOARD
+                    SIRALAMA
                 </button>
             </div>
         </div>
@@ -585,18 +585,18 @@
     <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full mt-4">
         <button onclick="openCosmeticsModal(); playSfx('click')" class="btn-3d btn-action p-2 flex flex-col items-center justify-center border-[3px] hover:bg-[#4A2D17]">
             <i class="fa-solid fa-box-open text-[#B388FF] text-2xl sm:text-3xl mb-1 mt-1"></i>
-            <span class="font-io text-white text-[11px] sm:text-[12px] tracking-wide font-bold">COSMETICS</span>
+            <span class="font-io text-white text-[11px] sm:text-[12px] tracking-wide font-bold">GÖRÜNÜMLER</span>
         </button>
         <button onclick="openShopModal(); playSfx('click')" class="btn-3d btn-yellow p-2 flex flex-col items-center justify-between border-[3px]">
             <div class="w-full bg-[#F4E4C6] h-5 sm:h-6 border-2 border-[var(--border-heavy)] rounded-t-sm relative shadow-inner">
                 <div class="absolute w-2 h-3 border-2 border-[var(--border-heavy)] border-b-0 rounded-t-full -top-3 left-1/2 -translate-x-1/2"></div>
             </div>
             <i class="fa-solid fa-store text-[var(--border-heavy)] text-lg sm:text-xl my-0.5"></i>
-            <span class="font-io text-[var(--border-heavy)] text-[11px] sm:text-[12px] tracking-wide font-bold">SHOP</span>
+            <span class="font-io text-[var(--border-heavy)] text-[11px] sm:text-[12px] tracking-wide font-bold">MAĞAZA</span>
         </button>
         <button onclick="openModal('challengesModal'); playSfx('click')" class="btn-3d btn-action p-2 flex flex-col items-center justify-start border-[3px] relative overflow-hidden hover:bg-[#4A2D17]">
             <i class="fa-solid fa-trophy text-[#FFD54F] text-2xl sm:text-[1.7rem] mt-1"></i>
-            <span class="font-io text-white text-[10px] sm:text-[11px] mt-1 font-bold">CHALLENGES</span>
+            <span class="font-io text-white text-[10px] sm:text-[11px] mt-1 font-bold">GÖREVLER</span>
             <div id="challenge-badge-progress" class="absolute bottom-0 w-full bg-black/70 border-t border-[var(--border-heavy)] text-[#79D138] font-black text-[10px] py-0.5 text-center">
                 0/3
             </div>
@@ -627,11 +627,11 @@
         
         <!-- 1. LOGIN MODALI -->
         <div id="loginModal" class="panel-wood w-full max-w-[380px] p-2 hidden flex-col relative modal-content" onclick="event.stopPropagation()">
-            <div class="modal-tab">LOGIN</div>
+            <div class="modal-tab">GİRİŞ</div>
             <button onclick="closeAllModals()" class="btn-3d bg-[#F4E4C6] border-[3px] border-[var(--border-heavy)] absolute -top-4 -right-3 sm:-right-4 w-9 h-9 rounded-xl font-io text-xl flex items-center justify-center pb-1 text-[var(--border-heavy)] z-50">✕</button>
             
             <div class="panel-inset p-4 sm:p-5 flex flex-col mt-6 border-[3px]">
-                <p class="font-io text-sm text-[#F7C02D] stroke-text mb-4 text-center leading-tight">LOGIN TO YOUR ACCOUNT</p>
+                <p class="font-io text-sm text-[#F7C02D] stroke-text mb-4 text-center leading-tight">HESABINA GİRİŞ YAP</p>
                 
                 <label class="text-white font-black text-xs mb-1">Username</label>
                 <input id="login-username" type="text" placeholder="Kullanıcı Adı" class="input-io w-full h-11 px-3 font-io text-base mb-3">
@@ -640,7 +640,7 @@
                 <input id="login-password" type="password" placeholder="Şifre" class="input-io w-full h-11 px-3 font-io text-base mb-4">
                 
                 <button onclick="handleLogin()" class="btn-3d btn-yellow w-full py-2.5 font-io text-base tracking-wide stroke-text-dark border-[3px] mb-3">
-                    LOGIN
+                    GİRİŞ YAP
                 </button>
                 
                 <div class="flex justify-center items-center gap-1.5 text-xs text-white/80">
@@ -652,12 +652,12 @@
 
         <!-- 2. REGISTER MODALI -->
         <div id="registerModal" class="panel-wood w-full max-w-[380px] p-2 hidden flex-col relative modal-content" onclick="event.stopPropagation()">
-            <div class="modal-tab">CREATE ACCOUNT</div>
+            <div class="modal-tab">KAYIT OL</div>
             <button onclick="closeAllModals()" class="btn-3d bg-[#F4E4C6] border-[3px] border-[var(--border-heavy)] absolute -top-4 -right-3 sm:-right-4 w-9 h-9 rounded-xl font-io text-xl flex items-center justify-center pb-1 text-[var(--border-heavy)] z-50">✕</button>
             
             <div class="panel-inset p-4 sm:p-5 flex flex-col mt-6 border-[3px]">
                 <div class="text-center mb-3">
-                    <p class="font-io text-sm text-[#79D138] stroke-text leading-tight">JOIN FORESTBRAWL</p>
+                    <p class="font-io text-sm text-[#79D138] stroke-text leading-tight">FORESTBRAWL'A KATIL</p>
                     <p class="font-black text-[#FFDF73] text-[11px] flex items-center justify-center gap-1.5 mt-1 drop-shadow-md">
                         Kayıt ol ve anında 300 <i class="fa-solid fa-coins text-[#F7C02D]"></i> kazan!
                     </p>
@@ -673,7 +673,7 @@
                 <input id="reg-email" type="email" placeholder="ornek@mail.com" class="input-io w-full h-11 px-3 font-io text-base mb-4">
                 
                 <button onclick="handleRegister()" class="btn-3d btn-red w-full py-2.5 font-io text-base tracking-wide stroke-text border-[3px] mb-3">
-                    CREATE ACCOUNT (+300 🪙)
+                    HESAP OLUŞTUR (+300)
                 </button>
                 
                 <div class="flex justify-center items-center gap-1.5 text-xs text-white/80">
@@ -751,7 +751,7 @@
 
         <!-- 4. AYARLAR MODALI -->
         <div id="settingsModal" class="panel-wood w-full max-w-[620px] p-2 hidden flex-col relative modal-content" onclick="event.stopPropagation()">
-            <div class="modal-tab">SETTINGS</div>
+            <div class="modal-tab">AYARLAR</div>
             <button onclick="closeAllModals()" class="btn-3d bg-[#F4E4C6] border-[3px] border-[var(--border-heavy)] absolute -top-4 -right-3 sm:-right-4 w-9 h-9 rounded-xl font-io text-xl flex items-center justify-center pb-1 text-[var(--border-heavy)] z-50">✕</button>
             
             <div class="flex flex-col sm:flex-row gap-2 mt-6 max-h-[70vh] sm:max-h-none overflow-y-auto pr-1">
@@ -759,7 +759,7 @@
                     <h3 class="font-io text-white stroke-text text-[13px] mb-1 text-center">Oynanış & Mobil</h3>
                     <div class="flex justify-between items-center bg-black/20 p-2 rounded-lg border border-white/10">
                         <div class="flex flex-col leading-tight w-2/3">
-                            <span class="text-white font-black text-xs">Kolay Yemek</span>
+                            <span class="text-white font-black text-xs"><img src="asset/apple.png" alt="Elma" class="inline-block w-4 h-4 object-contain align-middle mr-1">Elma</span>
                             <span class="text-[#F4E4C6] font-black text-[9px]">Tek tıkla veya can azalınca hızlı beslen</span>
                         </div>
                         <input id="set-auto-eat" type="checkbox" checked class="toggle-switch" onchange="saveSetting('fb_auto_eat', this.checked)">
@@ -1990,7 +1990,6 @@
             { id: 'q_scorpion_3', title: 'Çöl Akrebi Avcısı', desc: '3 akrep yok et', icon: '🦂', key: 'scorpions', target: 3, rewardCoins: 350, rewardXp: 250, color: 'yellow' },
             { id: 'q_spider_3', title: 'Mağara Örümceği', desc: '3 zehirli örümcek öldür', icon: '🕷️', key: 'spiders', target: 3, rewardCoins: 300, rewardXp: 220, color: 'purple' },
             { id: 'q_pvp_kill_1', title: 'İlk Kan', desc: '1 düşman oyuncu katlet', icon: '⚔️', key: 'kills', target: 1, rewardCoins: 400, rewardXp: 300, color: 'red' },
-            { id: 'q_bounty_king_1', title: 'Ödül Avcısı', desc: '1 ödül hedefini yen', icon: '🎯', key: 'kingKills', target: 1, rewardCoins: 650, rewardXp: 500, color: 'yellow' },
             { id: 'q_airdrop_1', title: 'Hazine Avcısı', desc: '1 Airdrop Sandığı aç', icon: '📦', key: 'airdrops', target: 1, rewardCoins: 350, rewardXp: 300, color: 'cyan' },
             { id: 'q_build_15', title: 'Usta Mimar', desc: '15 savunma yapısı inşa et', icon: '🪵', key: 'buildings', target: 15, rewardCoins: 200, rewardXp: 150, color: 'emerald' },
             { id: 'q_gold_1000', title: 'Zengin Savaşçı', desc: 'Toplam 1000 Altına ulaş', icon: '💎', key: 'gold', target: 1000, rewardCoins: 500, rewardXp: 400, color: 'blue' }

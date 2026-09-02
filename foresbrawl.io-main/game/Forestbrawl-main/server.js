@@ -25,6 +25,7 @@ let worldSeed = Math.floor(Math.random() * 0x7fffffff);
 let nextMobId = 1;
 const airdrops = new Map();
 let nextAirdropId = 1;
+const BOUNTY_EVENT_ENABLED = false;
 let currentBountyId = null;
 let lastAirdropSpawn = 0;
 
@@ -34,7 +35,6 @@ const QUESTS_LIST = [
   { id: 'q_scorpion_3', title: 'Çöl Akrebi Avcısı', desc: '3 akrep yok et', icon: '🦂', key: 'scorpions', target: 3, rewardCoins: 350, rewardXp: 250 },
   { id: 'q_spider_3', title: 'Mağara Örümceği', desc: '3 zehirli örümcek öldür', icon: '🕷️', key: 'spiders', target: 3, rewardCoins: 300, rewardXp: 220 },
   { id: 'q_pvp_kill_1', title: 'İlk Kan', desc: '1 düşman oyuncu katlet', icon: '⚔️', key: 'kills', target: 1, rewardCoins: 400, rewardXp: 300 },
-  { id: 'q_bounty_king_1', title: 'Ödül Avcısı', desc: '1 ödül hedefini yen', icon: '🎯', key: 'kingKills', target: 1, rewardCoins: 650, rewardXp: 500 },
   { id: 'q_airdrop_1', title: 'Hazine Avcısı', desc: '1 Airdrop Sandığı aç', icon: '📦', key: 'airdrops', target: 1, rewardCoins: 350, rewardXp: 300 },
   { id: 'q_build_15', title: 'Usta Mimar', desc: '15 savunma yapısı inşa et', icon: '🪵', key: 'buildings', target: 15, rewardCoins: 200, rewardXp: 150 },
   { id: 'q_gold_1000', title: 'Zengin Savaşçı', desc: 'Toplam 1000 Altına ulaş', icon: '💎', key: 'gold', target: 1000, rewardCoins: 500, rewardXp: 400 }
@@ -888,28 +888,9 @@ function spawnAirdrop() {
 }
 
 function updateBounty() {
-  if (players.size === 0) {
-    if (currentBountyId) { currentBountyId = null; io.emit('bounty_update', { id: null }); }
-    return;
-  }
-  let best = null;
-  for (const [id, p] of players) {
-    if ((p.hp ?? 0) <= 0) continue;
-    const g = Number(p.gold ?? 0);
-    const s = Number(p.score ?? 0);
-    const val = g * 2 + s;
-    if (!best || val > best.val) {
-      best = { id, p, val, g };
-    }
-  }
-  if (best && best.g >= 30) {
-    if (currentBountyId !== best.id) {
-      currentBountyId = best.id;
-      io.emit('bounty_update', { id: best.id, name: best.p.name || 'Oyuncu', gold: best.g, bonus: 300 });
-    }
-  } else if (currentBountyId) {
+  if (!BOUNTY_EVENT_ENABLED) {
     currentBountyId = null;
-    io.emit('bounty_update', { id: null });
+    return;
   }
 }
 
@@ -1374,7 +1355,7 @@ io.on('connection', (socket) => {
         target.kills = target.kills || 0;
         attacker.kills = (attacker.kills || 0) + 1;
         attacker.score = (attacker.score || 0) + 150;
-        if (currentBountyId && targetId === currentBountyId) {
+        if (BOUNTY_EVENT_ENABLED && currentBountyId && targetId === currentBountyId) {
           const bountyBonus = 300;
           attacker.gold = (attacker.gold || 0) + bountyBonus;
           attacker.score = (attacker.score || 0) + bountyBonus;
@@ -1409,7 +1390,7 @@ io.on('connection', (socket) => {
       target.kills = target.kills || 0;
       attacker.kills = (attacker.kills || 0) + 1;
       attacker.score = (attacker.score || 0) + 150;
-      if (currentBountyId && data.targetId === currentBountyId) {
+      if (BOUNTY_EVENT_ENABLED && currentBountyId && data.targetId === currentBountyId) {
         const bountyBonus = 300;
         attacker.gold = (attacker.gold || 0) + bountyBonus;
         attacker.score = (attacker.score || 0) + bountyBonus;
@@ -1442,7 +1423,7 @@ io.on('connection', (socket) => {
       target.kills = target.kills || 0;
       owner.kills = (owner.kills || 0) + 1;
       owner.score = (owner.score || 0) + 150;
-      if (currentBountyId && data.targetId === currentBountyId) {
+      if (BOUNTY_EVENT_ENABLED && currentBountyId && data.targetId === currentBountyId) {
         const bountyBonus = 300;
         owner.gold = (owner.gold || 0) + bountyBonus;
         owner.score = (owner.score || 0) + bountyBonus;

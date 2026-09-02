@@ -1982,12 +1982,12 @@ function drawSkinEyesOverlay(c, R, sk, fl) {
 <!-- DEATH OVERLAY (PREMIUM 3D WOOD IO THEME) -->
 <div id="death-overlay">
   <div class="death-wood-panel">
-    <div class="death-modal-tab">💀 ELENDİN!</div>
+    <div class="death-modal-tab">ELENDİN</div>
     
     <!-- Scrollable section — title, stats, progress bars -->
     <div id="death-scroll">
-      <div id="death-title">DEFEATED</div>
-      <div id="death-new-record" style="display:none; background:#79D138; color:#1F1108; font-family:'Lilita One',cursive; font-size:12px; padding:3px 12px; border-radius:8px; border:2px solid #1F1108; box-shadow:0 3px 0 #4A8C1C;">🏆 YENİ KİŞİSEL REKOR!</div>
+      <div id="death-title">OYUN BİTTİ</div>
+      <div id="death-new-record" style="display:none; background:#79D138; color:#1F1108; font-family:'Lilita One',cursive; font-size:12px; padding:3px 12px; border-radius:8px; border:2px solid #1F1108; box-shadow:0 3px 0 #4A8C1C;">YENİ KİŞİSEL REKOR</div>
       <div id="death-killer"></div>
       
       <!-- Inset Stat Panel -->
@@ -2027,7 +2027,7 @@ function drawSkinEyesOverlay(c, R, sk, fl) {
 
     <!-- Sticky footer — respawn + action buttons -->
     <div id="death-footer">
-      <button id="respawn-btn" class="btn-death-play" onclick="respawn()">PLAY AGAIN 🔄</button>
+      <button id="respawn-btn" class="btn-death-play" onclick="respawn()">TEKRAR OYNA</button>
       <div id="death-action-row">
         <button id="death-spectate-btn" class="btn-death-act" onclick="_enterSpectator()">👁️ İzle</button>
         <button id="death-invite-btn" class="btn-death-act" onclick="_shareScoreWithParty()">🔗 Davet</button>
@@ -2045,11 +2045,11 @@ function drawSkinEyesOverlay(c, R, sk, fl) {
 <!-- EVENT BANNER (disabled) -->
 <div id="event-banner" style="display:none !important;"></div>
 <!-- STREAK HUD -->
-<div id="streak-hud"><div id="streak-num">🔥 3</div><div id="streak-label">KİLL SERİSİ</div></div>
+<div id="streak-hud"><div id="streak-num">3</div><div id="streak-label">ÖLDÜRME SERİSİ</div></div>
 <!-- KILL NOTIFICATION POPUP -->
 <div id="kill-notif">
-  <div id="kill-notif-icon">💀</div>
-  <div id="kill-notif-main">ELİMİNE!</div>
+  <div id="kill-notif-icon">×</div>
+  <div id="kill-notif-main">RAKİP DÜŞTÜ</div>
   <div id="kill-notif-target"></div>
   <div id="kill-notif-sub"></div>
 </div>
@@ -14229,7 +14229,7 @@ function initMultiplayer() {
 
   _socket.on('welcome', ({ id, players: others, buildings: remoteBuildings, worldSeed, resHp, mobs, isHost: serverIsHost, bountyId: welcomeBountyId, airdrops: welcomeAirdrops }) => {
     _mySocketId = id;
-    if (welcomeBountyId !== undefined) _bountyId = welcomeBountyId;
+    _bountyId = null;
     if (welcomeAirdrops && Array.isArray(welcomeAirdrops)) {
       airdropsList = welcomeAirdrops.map(ad => ({ ...ad, dropY: 0, beamAlpha: 1.0, pulse: 0, shake: 0, hitFlash: 0 }));
     }
@@ -14459,11 +14459,10 @@ function initMultiplayer() {
     const _knTarget = document.getElementById('kill-notif-target');
     const _knSub = document.getElementById('kill-notif-sub');
     if (_kn && _knMain) {
-      const _streakLabels = ['','','DOUBLE KİLL! 🔥','TRİPLE KİLL! 💥','QUAD KİLL! ⚡','PENTA KİLL! 🌟'];
-      const _sl = player.kills >= 2 ? (_streakLabels[Math.min(player.kills, 5)] || `${player.kills}X KİLL! 🔥`) : 'ELİMİNE EDİLDİ!';
+      const _sl = player.kills >= 2 ? `${player.kills}. ÖLDÜRME` : 'RAKİP DÜŞTÜ';
       _knMain.textContent = _sl;
-      _knTarget.textContent = '⚔️ ' + targetName;
-      _knSub.textContent = `${player.kills}. kill • Skor: ${player.score||0}`;
+      _knTarget.textContent = targetName;
+      _knSub.textContent = `${player.kills}. öldürme • Skor: ${player.score||0}`;
       if (_kn._hideTimer) clearTimeout(_kn._hideTimer);
       _kn.classList.remove('show');
       _kn.style.animation = 'none';
@@ -14473,7 +14472,7 @@ function initMultiplayer() {
       });
       _kn._hideTimer = setTimeout(() => _kn.classList.remove('show'), 2100);
     }
-    floatingTexts.push({ x: player.x, y: player.y - 55, text: '⚔️ KİLL!', alpha: 1, life: 55, color: '#ffdd00', big: true });
+    floatingTexts.push({ x: player.x, y: player.y - 55, text: 'RAKİP DÜŞTÜ', alpha: 1, life: 55, color: '#ffdd00', big: true });
     // Kill flash
     const _kf = document.getElementById('kill-flash');
     if (_kf) {
@@ -14571,6 +14570,7 @@ function initMultiplayer() {
 
   // Bounty target updated
   _socket.on('bounty_update', ({ id, name }) => {
+    return;
     const wasBounty = _bountyId;
     _bountyId = id || null;
     if (_bountyId && _bountyId !== _mySocketId) {
@@ -14584,6 +14584,7 @@ function initMultiplayer() {
 
   // We killed the bounty target — extra reward
   _socket.on('bounty_kill_reward', ({ name, bonus }) => {
+    return;
     _incQuestStat('kingKills', 1);
     _incQuestStat('kills', 1);
     player.score = (player.score || 0) + (bonus || 300);
@@ -14597,6 +14598,7 @@ function initMultiplayer() {
   });
 
   _socket.on('bounty_killed_broadcast', ({ killer, victim, bonus }) => {
+    return;
     showToast(`${killer}, ${victim} oyuncusunu yendi. Ödül: +${bonus || 300} altın.`, 5000, '#ffd700');
     playSound(950, 0.25, 'triangle', 0.3);
   });
